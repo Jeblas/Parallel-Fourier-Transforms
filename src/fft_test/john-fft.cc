@@ -32,6 +32,10 @@ void fft(Complex *in, int size, int step, int start) {
     }
     
 */
+    Complex *temp = new Complex[size];
+    for (size_t i = 0; i < size; ++i) {
+        temp[i] = in[start + i * step];
+    }
 
     for (size_t i = 0; i < size / 2; ++i) {
 /*
@@ -49,12 +53,16 @@ void fft(Complex *in, int size, int step, int start) {
             in [k + N/2]     = in [(start + step * i) + (step * size / 2 )]
             even[k] =    in[start + (step * 2 * i)]
 */
+        Complex even = temp[i * 2];
+	Complex odd = temp[i * 2 + 1];
+
+	
         size_t even_ith_index = start + (step * 2 * i);
         float theta = -2 * PI * i / size;
         size_t index_start = start + step * i;
 
-        Complex even = in[even_ith_index];
-	Complex odd = in[(start + step) + (step * 2) * i];
+        //Complex even = in[even_ith_index];
+	//Complex odd = in[(start + step) + (step * 2) * i];
         Complex twiddle_factor = Complex(cos(theta), sin(theta)) * odd;
         in[index_start] = even + twiddle_factor;
         in [index_start + (step * size / 2 )] = even - twiddle_factor;
@@ -70,6 +78,7 @@ void fft(Complex *in, int size, int step, int start) {
         in [index_start + (step * size / 2 )] = in[even_ith_index] - temp;
 */
     }
+	delete[] temp;
 }
 
 int main(int argc, char **argv) {
