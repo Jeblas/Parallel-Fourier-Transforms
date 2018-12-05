@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <valarray>
 
 const float PI = 3.14159265358979f;
 
@@ -17,6 +18,22 @@ void fft(Complex *in, int size, int step, int start) {
     fft(in, size / 2, step * 2, start + step);      // Odd
 
     //combine
+    //
+    //
+
+    std::cout << "=====" << std::endl;
+    std::cout << "size = " << size << std::endl;
+    std::cout << "step = " << step << std::endl;
+    std::cout << "start = " << size << std::endl;
+    //Complex copy[size];
+/*
+    for (size_t k = 0; k < size; ++k) {
+        copy[k] = in[start + step * k];
+	std::cout << start + step * k << '\n';
+    }
+    
+*/
+
     for (size_t i = 0; i < size / 2; ++i) {
         //
         // Complex t = std::polar(1.0, -2 * PI * k / N) * odd[k]
@@ -40,8 +57,19 @@ void fft(Complex *in, int size, int step, int start) {
         float theta = -2 * PI * i / size;
         size_t index_start = start + step * i;
 
+        //Complex even = in[even_ith_index];
+	//Complex odd = in[(start + step) + (step * 2) * i];
+
+	
+	std::cout << i << " ------\n";
+	std::cout << "in [" << index_start << "] = even [" << even_ith_index << "]\n";
+	std::cout << "in [" << index_start + step * size / 2 << "] = even [" << even_ith_index << "]\n";
+
         Complex temp = Complex(cos(theta), sin(theta)) * in[(start + step) + (step * 2 * i)];
+        //Complex twiddle_factor = Complex(cos(theta), sin(theta)) * odd;
+        //in[index_start] = even + twiddle_factor;
         in[index_start] = in[even_ith_index] + temp;
+        //in [index_start + (step * size / 2 )] = even - twiddle_factor;
         in [index_start + (step * size / 2 )] = in[even_ith_index] - temp;
     }
 }
@@ -69,8 +97,8 @@ int main(int argc, char **argv) {
     in_img[6] = Complex(0.0);
     in_img[7] = Complex(0.0);
 
-    fft(in_img, img_width, 1, 0);
-
+    fft(in_img, 8, 1, 0);
+    std::cout << "======================\n";
     for (int i = 0; i < 8; ++i) {
         std::cout << in_img[i] << std::endl;
     }

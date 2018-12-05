@@ -7,7 +7,6 @@
 #include "src/single_thread_naive.h"
 #include "src/cuda_naive.h"
 #include <iomanip>
-//#include "single-thread-cooley-turkey.h"
 
 int main(int argc, char * argv[]) {
 	InputImage image_handler(argv[2]);
@@ -15,6 +14,7 @@ int main(int argc, char * argv[]) {
 	Complex * out_image = (Complex *) malloc(sizeof(Complex)*image_handler.get_width()*image_handler.get_height());
 	Complex * out2_image = (Complex *) malloc(sizeof(Complex)*image_handler.get_width()*image_handler.get_height());
 	single_thread_naive(input_image, out_image, image_handler);
+
 	cuda_naive(input_image, out2_image, image_handler);
 	for(int i = 0; i < image_handler.get_height(); i ++){
 		for (int j = 0; j < image_handler.get_height(); j++) {
@@ -23,6 +23,7 @@ int main(int argc, char * argv[]) {
 		}
 		std::cout << std::endl;
 	}
-    image_handler.save_image_data(argv[3], out2_image, image_handler.get_width(), image_handler.get_height());
+
+	image_handler.save_image_data(argv[3], out_image, image_handler.get_width(), image_handler.get_height());
 
 }

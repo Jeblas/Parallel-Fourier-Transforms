@@ -1,5 +1,5 @@
-#include "complex.h"
-#include "input_image.h"
+#include "../complex.h"
+#include "../input_image.h"
 
 #include <iostream>
 #include <cmath>
