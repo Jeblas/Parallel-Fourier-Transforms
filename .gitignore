@@ -33,3 +33,6 @@
 
 /build
 /bin
+/src/fft_test/bin
+/src/fft_test/output
+
