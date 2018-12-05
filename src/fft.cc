@@ -15,8 +15,8 @@ void fft(Complex *input, int size) {
     Complex even[size >> 1];
     Complex odd[size >> 1];
     for (size_t k = 0; k < (size >> 1); ++k) {
-	even[k] = input[k << 1];
-	odd[k] = input[(k << 1) + 1];
+	    even[k] = input[k << 1];
+	    odd[k] = input[(k << 1) + 1];
     }
 
     //recursive call
