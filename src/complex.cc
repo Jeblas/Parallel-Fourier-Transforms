@@ -1,5 +1,6 @@
 //
 // Created by brian on 11/20/18.
+// Updated by John on 12/4/18.
 //
 
 #include "complex.h"
@@ -28,17 +29,23 @@ Complex Complex::operator*(const Complex &b) const {
     return Complex(real_comp, imag_comp);
 }
 
-Complex Complex::mag() const {
+float Complex::mag() const {
 	// Type should be float
 	// sqrt(imag^2 + real ^2) = mag
+    return sqrt(pow(imag, 2) + pow(real, 2));
 }
 
-Complex Complex::angle() const {
+float Complex::angle() const {
 	// arctan(imag / real) = theta
+    return atan(imag / real);
+    // TODO check for real = 0; return pi/2 or 3pi/2
+    // TODO range should be 0 to 2pi
+    // TODO check if both negative; add + pi if so
+    // TODO check if should return degrees, currently returns in radians
 }
 
 Complex Complex::conj() const {
-
+    return Complex(real, -1 * imag);
 }
 
 std::ostream& operator<< (std::ostream& os, const Complex& rhs) {
