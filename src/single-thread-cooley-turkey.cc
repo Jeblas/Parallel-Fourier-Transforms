@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-int main(int argc, char **argv) {
+int mainb(int argc, char **argv) {
     Complex *in_img;
     Complex *out_img;
     int img_width;
