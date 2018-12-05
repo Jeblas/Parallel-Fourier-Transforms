@@ -30,18 +30,11 @@ Complex Complex::operator*(const Complex &b) const {
 }
 
 float Complex::mag() const {
-	// Type should be float
-	// sqrt(imag^2 + real ^2) = mag
     return sqrt(pow(imag, 2) + pow(real, 2));
 }
 
 float Complex::angle() const {
-	// arctan(imag / real) = theta
-    return atan(imag / real);
-    // TODO check for real = 0; return pi/2 or 3pi/2
-    // TODO range should be 0 to 2pi
-    // TODO check if both negative; add + pi if so
-    // TODO check if should return degrees, currently returns in radians
+    return atan2(imag, real);
 }
 
 Complex Complex::conj() const {
