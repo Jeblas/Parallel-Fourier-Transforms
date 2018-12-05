@@ -33,33 +33,37 @@ void fft(Complex *input, int size) {
 }
 
 int main(int argc, char **argv) {
-    Complex in_img [8];
-    Complex *out_img;
+    Complex *img;
+    Complex *img_transpose;
     int img_width;
     int img_height;
 
-    //InputImage image_handler(argv[2]);
+    InputImage image_handler(argv[2]);
 
-    //in_img = image_handler.get_image_data();
-    //img_width = image_handler.get_width();
-    //img_height = image_handler.get_height();
+    img = image_handler.get_image_data();
+    img_width = image_handler.get_width();
+    img_height = image_handler.get_height();
 
-    // Data element read in.
+    img_transpose = new Complex[img_width * img_height];
 
-    in_img[0] = Complex(1.0);
-    in_img[1] = Complex(1.0);
-    in_img[2] = Complex(1.0);
-    in_img[3] = Complex(1.0);
-    in_img[4] = Complex(0.0);
-    in_img[5] = Complex(0.0);
-    in_img[6] = Complex(0.0);
-    in_img[7] = Complex(0.0);
-
-    fft(in_img, 8);
-    for (int i = 0; i < 8; ++i) {
-        std::cout << in_img[i] << std::endl;
+    for (int row = 0; row < img_height; ++row) {
+        fft(img + row * img_width, img_width);
     }
 
-    //image_handler.save_image_data(argv[3], out_img, img_width, img_height);
+    // transpose
+    for (int row = 0; row < img_height; ++row) {
+        for (int col = 0; col < img_width; ++col) {
+            img_transpose[row + (col * img_height)] = img[col + (row * img_width)];
+        }
+    }
+
+    for (int row = 0; row < img_width; ++row) {
+        fft(img_transpose + row * img_height, img_height);
+    }
+
+    image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
+
+    delete[] img_transpose;
+
     return 0;
 }
