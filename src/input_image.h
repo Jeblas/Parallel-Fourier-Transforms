@@ -2,7 +2,9 @@
 // Created by brian on 11/20/18.
 //
 
-#pragma once
+
+#ifndef INPUT_IMAGE_H
+#define INPUT_IMAGE_H
 
 class Complex;
 
@@ -29,3 +31,5 @@ private:
     int h;
     Complex* data;
 };
+
+#endif

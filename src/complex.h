@@ -2,15 +2,19 @@
 // Created by brian on 11/20/18.
 //
 
-#pragma once
+
+#ifndef COMPLEX_H
+#define COMPLEX_H
 
 #include <iostream>
+#include <cmath>
 
 class Complex {
 public:
     Complex();
     Complex(float r, float i);
     Complex(float r);
+    Complex(const Complex & rhs);
     Complex operator+(const Complex& b) const;
     Complex operator-(const Complex& b) const;
     Complex operator*(const Complex& b) const;
@@ -27,3 +31,4 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const Complex& rhs);
 
+#endif

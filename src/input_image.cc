@@ -51,9 +51,9 @@ void InputImage::save_image_data(const char *filename, Complex *d, int w, int h)
 
     ofs << w << " " << h << std::endl;
 
-    for(int r = 0; r < h; ++r) {
-        for(int c = 0; c < w; ++c) {
-            ofs << d[r * w + c] << " ";
+    for(int r = 0; r < h; r++) {
+        for(int c = 0; c < w; c++) {
+            ofs << d[r * w + c].real << " ";
         }
         ofs << std::endl;
     }
@@ -70,7 +70,7 @@ void InputImage::save_image_data_real(const char* filename, Complex* d, int w, i
 
     for (int r = 0; r < h; ++r) {
         for (int c = 0; c < w; ++c) {
-            ofs << d[r * w + c].real << " ";
+            ofs << d[r * w + c] << " ";
         }
         ofs << std::endl;
     }
