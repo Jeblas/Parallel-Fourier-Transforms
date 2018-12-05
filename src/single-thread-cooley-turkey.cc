@@ -16,8 +16,6 @@ void fft(Complex *in, int size, int step, int start) {
     fft(in, size / 2, step * 2, start);             // Even
     fft(in, size / 2, step * 2, start + step);      // Odd
 
-
-
     //combine
     for (size_t i = 0; i < size / 2; ++i) {
         //
@@ -49,21 +47,35 @@ void fft(Complex *in, int size, int step, int start) {
 }
 
 int main(int argc, char **argv) {
-    Complex *in_img;
+    Complex in_img [8];
     Complex *out_img;
     int img_width;
     int img_height;
 
-    InputImage image_handler(argv[2]);
+    //InputImage image_handler(argv[2]);
 
-    in_img = image_handler.get_image_data();
-    img_width = image_handler.get_width();
-    img_height = image_handler.get_height();
+    //in_img = image_handler.get_image_data();
+    //img_width = image_handler.get_width();
+    //img_height = image_handler.get_height();
 
     // Data element read in.
+
+    in_img[0] = Complex(1.0);
+    in_img[1] = Complex(1.0);
+    in_img[2] = Complex(1.0);
+    in_img[3] = Complex(1.0);
+    in_img[4] = Complex(0.0);
+    in_img[5] = Complex(0.0);
+    in_img[6] = Complex(0.0);
+    in_img[7] = Complex(0.0);
+
     fft(in_img, img_width, 1, 0);
 
+    for (int i = 0; i < 8; ++i) {
+        std::cout << in_img[i] << std::endl;
+    }
 
-    image_handler.save_image_data(argv[3], out_img, img_width, img_height);
+
+    //image_handler.save_image_data(argv[3], out_img, img_width, img_height);
     return 0;
 }
