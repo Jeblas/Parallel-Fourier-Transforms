@@ -1,9 +1,4 @@
-#include "complex.h"
-#include "input_image.h"
-
-#include <iostream>
-#include <cmath>
-#include <mpi.h>
+#include "mpi_fft.h"
 
 const float PI = 3.14159265358979f;
 
@@ -21,7 +16,7 @@ void decompose_complex_array(Complex *input, float *out_real, float *out_imag, s
 }
 
 void separate(Complex *array, size_t size) {
-    // All evens to lower half odds to upper half
+    // All evens to lower half; odds to upper half
     Complex *temp = new Complex[size];
 
     for (size_t i = 0; i < (size >> 1); ++i) {
@@ -204,6 +199,7 @@ int main(int argc, char **argv) {
 	    fft(elements + (row * img_height), img_height);
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
+   
     delete [] elements;
     // Output
     if (MPI_rank == 0) {
