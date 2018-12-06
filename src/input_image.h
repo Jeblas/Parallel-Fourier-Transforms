@@ -12,7 +12,7 @@ class InputImage {
 public:
     InputImage() {};
     InputImage(const char* filename);
-    ~InputImage();
+
     int get_width() const;
     int get_height() const;
 

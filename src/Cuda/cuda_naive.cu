@@ -2,9 +2,9 @@
 // Created by jbm on 12/5/18.
 //
 
-#include <driver_types.h>
+
 #include "cuda_naive.h"
-#include <stdio.h>
+
 
 __global__ void transpose(Complex * A, Complex * A_transpose, int w, int h) {
 	int i = threadIdx.y + blockDim.y * blockIdx.y;
@@ -37,7 +37,7 @@ __global__ void fft_row(Complex * input, Complex * output, int w, int h) {
 }
 
 
-void cuda_naive(Complex * input_image, Complex * output_transform, InputImage input_image_meta) {
+void cuda_naive_forward(Complex * input_image, Complex * output_transform, InputImage input_image_meta) {
 	Complex * d_input_image = NULL;
 	Complex * d_output_transform = NULL;
 	Complex * d_input_image_transpose = NULL;
@@ -62,4 +62,8 @@ void cuda_naive(Complex * input_image, Complex * output_transform, InputImage in
 	transpose<<<dim3(grid_width,grid_height), dim3(THREADS_PER_BLOCK_SIDE, THREADS_PER_BLOCK_SIDE)>>>(d_output_transform, d_input_image_transpose, w, h);
 
 	cudaMemcpy(output_transform, d_input_image_transpose, sizeof(Complex)*w*h,cudaMemcpyDeviceToHost);
+}
+
+void cuda_naive_reverse(Complex * input_transform, Complex * ouput_image, InputImage input_image_mets) {
+
 }

@@ -144,7 +144,7 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
         delete [] out_imag;
     }
 }
-
+/*
 int main(int argc, char **argv) {
     // Need img_width, img_height
     MPI_Init(&argc, &argv);
@@ -216,3 +216,4 @@ int main(int argc, char **argv) {
 
     MPI_Finalize();
 }
+*/

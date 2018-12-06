@@ -26,9 +26,6 @@ InputImage::InputImage(const char* filename) {
         }
     }
 }
-InputImage::~InputImage() {
-    delete[] data;
-}
 
 int InputImage::get_width() const {
     return w;
