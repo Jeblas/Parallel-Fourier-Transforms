@@ -32,6 +32,8 @@ Complex Complex::operator*(const Complex &b) const {
 }
 
 float Complex::mag() const {
+    // TODO remove Power 2 to image * image + real * real
+    // reduce number of function calls
     return sqrt(pow(imag, 2) + pow(real, 2));
 }
 
