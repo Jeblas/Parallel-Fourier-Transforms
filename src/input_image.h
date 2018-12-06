@@ -10,7 +10,7 @@ class Complex;
 
 class InputImage {
 public:
-
+    InputImage() {};
     InputImage(const char* filename);
     ~InputImage();
     int get_width() const;

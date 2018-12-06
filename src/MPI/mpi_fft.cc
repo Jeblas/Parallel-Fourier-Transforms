@@ -1,14 +1,15 @@
 #include "mpi_fft.h"
+#include <iostream>
 
 const float PI = 3.14159265358979f;
 
-void compose_complex_array(Complex *output, float *real, float *imag, size) {
+void compose_complex_array(Complex *output, float *real, float *imag, int size) {
     for (int i = 0; i < size; ++i) {
         output[i] = Complex(real[i], imag[i]);
     }
 }
 
-void decompose_complex_array(Complex *input, float *out_real, float *out_imag, size) {
+void decompose_complex_array(Complex *input, float *out_real, float *out_imag, int size) {
     for (int i = 0; i < size; ++i) {
         out_real[i] = input[i].real;
         out_imag[i] = input[i].imag;
@@ -59,7 +60,9 @@ void fft(Complex *input, int size) {
 void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
     // TODO !!! memcopy first elements from img to elements ////////////////////
-
+        for (int i = 0; i < chunk_size * img_width; ++i) {
+	    elements[i] = img[i];
+	}
         // chunk array accordingly and send
         // all ranks except last one
         size_t send_size = chunk_size * img_width;
@@ -97,11 +100,13 @@ void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int im
     }
 }
 
-// TODO requires memcoy for rank 0
 void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
         //std::memcopy(); into img
-
+	for (int i = 0; i < chunk_size * img_width; ++i) {
+	    img[i] = elements[i];
+	}
+	
     	size_t recv_size = chunk_size * img_width;
         float *real_elements = new float[recv_size];
         float *imag_elements = new float[recv_size];
@@ -154,19 +159,20 @@ int main(int argc, char **argv) {
     int img_width;
     int img_height;
     uint32_t chunk_size;
+    InputImage image_handler(argv[2]);
 
     // Rank 0 responsible for reading file and sending values
     if (MPI_rank == 0) {
-        InputImage image_handler(argv[2]);
+       // image_handler = InputImage(argv[2]);
         img = image_handler.get_image_data();
         img_width = image_handler.get_width();
         img_height = image_handler.get_height();
-        
     }
     MPI_Bcast(&img_width, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&img_height, 1, MPI_INT, 0, MPI_COMM_WORLD);
     //MPI_Barrier(MPI_COMM_WORLD);
     
+
     // Last rank can have a chunk size different than the rest for rows % ranks != 0
     if (MPI_rank != MPI_num_ranks - 1) {
         chunk_size = img_height / MPI_num_ranks;
