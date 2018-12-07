@@ -8,6 +8,8 @@
 
 class Complex;
 
+enum FourierDirection {FORWARD, REVERSE};
+
 class InputImage {
 public:
     InputImage() {};

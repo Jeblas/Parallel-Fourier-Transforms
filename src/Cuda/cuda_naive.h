@@ -8,9 +8,22 @@
 #include "../input_image.h"
 #include <cmath>
 #include <stdio.h>
+#include <iomanip>
+#include <cuComplex.h>
+#include <cusparse.h>
+#include <inttypes.h>
 #define THREADS_PER_BLOCK_SIDE 8
 
-void cuda_naive_forward(Complex * input_image, Complex * output_transform, InputImage input_image_meta);
-void cuda_naive_inverse(Complex * input_transform, Complex * ouput_image, InputImage input_image_mets);
+
+struct csr_complex_Mat {
+	int nnz;
+	cuComplex * csrValA;
+	int * csrRowPtrA;
+	int * csrColIndA;
+};
+
+void cuda_naive(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir);
+
+void cuda_ufft(Complex * input_image, Complex * output_transform, InputImage inputImage);
 
 #endif //P3_CUDA_NAIVE_H

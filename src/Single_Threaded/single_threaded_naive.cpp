@@ -23,6 +23,10 @@ void single_thread_naive(Complex * input_image, Complex * output_transform, Inpu
 			}
 		}
 	}
+	for(int i = 0; i < w;i++) {
+		std::cout << output_transform[i].real << ", ";
+	}
+	std::cout << std::endl;
 //	std::cout << output_transform[w] << std::endl;
 	Complex * intermediate = (Complex *) malloc(sizeof(Complex)*input_image_meta.get_height()*input_image_meta.get_width());
 	memcpy(intermediate, output_transform, sizeof(Complex)*input_image_meta.get_height()*input_image_meta.get_width());
