@@ -56,10 +56,8 @@ void fft(Complex *input, int size) {
     }
 }
 
-// TODO requires memcpy for rank 0
 void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
-    // TODO !!! memcopy first elements from img to elements ////////////////////
         for (int i = 0; i < chunk_size * img_width; ++i) {
 	    elements[i] = img[i];
 	}
@@ -102,7 +100,6 @@ void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int im
 
 void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
-        //std::memcopy(); into img
 	for (int i = 0; i < chunk_size * img_width; ++i) {
 	    img[i] = elements[i];
 	}
@@ -146,7 +143,6 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
 }
 
 int main(int argc, char **argv) {
-    // Need img_width, img_height
     MPI_Init(&argc, &argv);
     int MPI_num_ranks;
     MPI_Comm_size(MPI_COMM_WORLD, &MPI_num_ranks);
@@ -163,14 +159,14 @@ int main(int argc, char **argv) {
 
     // Rank 0 responsible for reading file and sending values
     if (MPI_rank == 0) {
-       // image_handler = InputImage(argv[2]);
+	// Todo dont read the file for every process
+        // image_handler = InputImage(argv[2]);
         img = image_handler.get_image_data();
         img_width = image_handler.get_width();
         img_height = image_handler.get_height();
     }
     MPI_Bcast(&img_width, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&img_height, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //MPI_Barrier(MPI_COMM_WORLD);
     
 
     // Last rank can have a chunk size different than the rest for rows % ranks != 0
