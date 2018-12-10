@@ -1,5 +1,6 @@
 #include "../complex.h"
 #include "../input_image.h"
+#include "../fourier_transforms.h"
 
 #include <cmath>
 #include <thread>
@@ -8,6 +9,7 @@
 const float PI = 3.14159265358979f;
 const int NUM_THREADS = 8;
 
+/*
 void dft(Complex *input, Complex *output, int size) {
     for(int n = 0; n < size; ++n) {
         output[n] = Complex(0,0);
@@ -18,6 +20,7 @@ void dft(Complex *input, Complex *output, int size) {
         }
     }
 }
+*/
 
 void thread_dft_loop(Complex *input, Complex *output, int chunk_size, int thread_id, int num_cols) {
     int offset = thread_id * chunk_size * num_cols;
