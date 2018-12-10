@@ -1,10 +1,12 @@
 #include "../complex.h"
 #include "../input_image.h"
+#include "../fourier_transforms.h"
 
 #include <cmath>
 
 const float PI = 3.14159265358979f;
 
+/*
 void dft(Complex *input, Complex *output, int size) {
     for(int n = 0; n < size; ++n) {
         output[n] = Complex(0,0);
@@ -16,6 +18,7 @@ void dft(Complex *input, Complex *output, int size) {
         }
     }
 }
+*/
 
 int main(int argc, char **argv) {
     Complex *img;
