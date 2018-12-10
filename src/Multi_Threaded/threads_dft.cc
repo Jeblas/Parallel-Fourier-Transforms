@@ -1,10 +1,4 @@
-#include "../complex.h"
-#include "../input_image.h"
-#include "../fourier_transforms.h"
-
-#include <cmath>
-#include <thread>
-#include <vector>
+#include "threads_dft.h"
 
 const float PI = 3.14159265358979f;
 const int NUM_THREADS = 8;
