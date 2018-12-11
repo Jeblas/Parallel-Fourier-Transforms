@@ -8,16 +8,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 
 include_directories(
-        src
+        ../
 	${MPI_INCLUDE_PATH}
 )
 
 set(SOURCE_FILES
-	src/input_image.cc
-	src/complex.cc
+	../input_image.cc
+	../complex.cc
+	../fourier_transforms.cc
 )
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/MPI/mpi_fft.cc)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} mpi_fft.cc)
 target_link_libraries(${PROJECT_NAME} ${MPI_LIBRARIES})
 
 if(MPI_COMPILE_FLAGS)
