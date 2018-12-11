@@ -8,8 +8,8 @@ void dft(Complex *input, Complex *output, int size) {
     for(int n = 0; n < size; ++n) {
         output[n] = Complex(0,0);
         for(int k = 0; k < size; ++k) {
-            float theta = 2 * PI * n * k / size;
-            Complex W = Complex(cos(theta), -sin(theta));
+            float theta = -2 * PI * n * k / size;
+            Complex W = Complex(cos(theta), sin(theta));
             output[n] = output[n] + W * input[k];
 
         }

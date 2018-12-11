@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     img_transpose = new Complex[img_width * img_height];
 
     for (int row = 0; row < img_height; ++row) {
-        recursive_fft(img + row * img_width, img_width);
+        inplace_fft(img + row * img_width, img_width);
     }
 
     // Transpose
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     }
 
     for (int row = 0; row < img_width; ++row) {
-        recursive_fft(img_transpose + row * img_height, img_height);
+        inplace_fft(img_transpose + row * img_height, img_height);
     }
 
     image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
