@@ -102,7 +102,6 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
     }
 }
 
-// TODO change to main_mpi
 void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     MPI_Init(&argc, &argv);
     int MPI_num_ranks;
@@ -120,7 +119,6 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 
     // Rank 0 responsible for reading file and sending values
     if (MPI_rank == 0) {
-	// Todo dont read the file for every process
         image_handler.read_image_data(argv[2]);
         img = image_handler.get_image_data();
         img_width = image_handler.get_width();

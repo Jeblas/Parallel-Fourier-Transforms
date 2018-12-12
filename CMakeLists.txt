@@ -17,9 +17,6 @@ set(SOURCE_FILES
         src/input_image.cc
         src/fourier_transforms.cc
         src/complex.cc
-	#src/Single_Threaded/single_threaded_naive.cpp
-	#src/Single_Threaded/dft.cc
-	#src/Single_Threaded/recursive_fft.cc
 	)
 
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
@@ -28,7 +25,6 @@ endif()
 
 if(${THREADS_FOUND})
     set(SOURCE_FILES_MT ${SOURCE_FILES} src/Multi_Threaded/threads_dft.cc)
-    #set(SOURCE_FILES ${SOURCE_FILES_MT})
 
     add_executable(p31 ${SOURCE_FILES_MT} src/main.cc)
     target_compile_definitions(p31 PRIVATE -DMT=1)
@@ -58,16 +54,12 @@ endif(${CUDA_FOUND})
 
 if(${MPI_FOUND})
     set(SOURCE_FILES_MPI ${SOURCE_FILES})
-    include_directories(${MPI_INCLUDE_PATH})
-    #set(SOURCE_FILES ${SOURCE_FILES}
-    #        src/MPI/mpi_fft.cc)
     set(SOURCE_FILES_MPI ${SOURCE_FILES_MPI}
             src/MPI/mpi_fft.cc)
 
+    include_directories(${MPI_INCLUDE_PATH})
 
     add_executable(p32 ${SOURCE_FILES_MPI} src/main.cc)
     target_compile_definitions(p32 PRIVATE -DWMPI=1)
     target_link_libraries(p32 ${MPI_LIBRARIES})
-    #target_link_libraries(p3 ${MPI_LIBRARIES})
-
 endif(${MPI_FOUND})

@@ -6,49 +6,6 @@
 
 const float PI = 3.14159265358979f;
 
-/*
-void separate(Complex * array, size_t size) {
-    // All evens to lower half; odds to upper half
-    Complex *temp = new Complex[size / 2];
-
-    for (size_t i = 0; i < (size / 2); ++i) {
-        temp[i] = array[(i * 2) + 1];
-    }
-    for (size_t i = 0; i < (size / 2); ++i) {
-        array[i] = array[i * 2];
-    }
-    for (size_t i = 0; i < (size / 2); ++i) {
-        array[i + (size / 2)] = temp[i];
-    }
-
-    delete[] temp;
-}
-
-void fft(Complex *input, int size) {
-    if (size <= 1) {
-        return;
-    }
-
-    //divide
-    separate(input, size);
-
-    //recursive call
-    fft(input, size / 2);
-    fft(input + (size / 2), size / 2);
-
-    //combine
-    for (int i = 0; i < (size / 2); ++i) {
-        float theta = -2.0f* PI * i / size;
-	Complex even = input[i];
-	Complex odd = input[i + (size / 2)];
-        
-	Complex twiddle_factor = Complex(cos(theta), sin(theta)) * odd;
-        input[i] = even + twiddle_factor;
-        input[i + (size / 2)] = even - twiddle_factor;
-    }
-}
-*/
-
 int main(int argc, char **argv) {
     Complex *img;
     Complex *img_transpose;
@@ -77,6 +34,8 @@ int main(int argc, char **argv) {
     for (int row = 0; row < img_width; ++row) {
         inplace_fft(img_transpose + row * img_height, img_height);
     }
+
+    // TODO Transpose again
 
     image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
 

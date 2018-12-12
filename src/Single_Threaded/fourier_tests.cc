@@ -19,7 +19,6 @@ int main(int argc, char **argv) {
     std::cout << "//////////////////////////\n";
 
     Complex test_in1[] = {Complex(1), Complex(2), Complex(1), Complex(1), Complex(1), Complex(1), Complex(1), Complex(2)};
-  //  Complex *test_out1 = new Complex[8];
     inplace_fft(test_in1, 8);
     for (int i = 0; i < 8; ++i) {
         std::cout << test_in1[i] << std::endl;

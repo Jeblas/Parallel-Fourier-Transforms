@@ -1,10 +1,4 @@
-//
-// Created by brian on 11/20/18.
-// Updated by John on 12/4/18.
-//
-
 #include "complex.h"
-
 #include <cmath>
 
 const float PI = 3.14159265358979f;
@@ -32,8 +26,6 @@ Complex Complex::operator*(const Complex &b) const {
 }
 
 float Complex::mag() const {
-    // TODO remove Power 2 to image * image + real * real
-    // reduce number of function calls
     return sqrt(pow(imag, 2) + pow(real, 2));
 }
 
