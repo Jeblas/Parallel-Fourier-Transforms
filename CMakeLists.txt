@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(P3)
+project(Parallel-Fourier-Transforms)
 
 find_package(CUDA)
 find_package(MPI)

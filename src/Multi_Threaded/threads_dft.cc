@@ -1,7 +1,7 @@
 #include "threads_dft.h"
 
 const float PI = 3.14159265358979f;
-const int NUM_THREADS = 8;
+int NUM_THREADS = 8;
 
 void thread_dft_loop(Complex *input, Complex *output, int chunk_size, int thread_id, int num_cols, bool is_reverse) {
     int offset = thread_id * chunk_size * num_cols;
@@ -34,6 +34,10 @@ void mt_dft_2d(int argc, char **argv, bool is_reverse) {
     Complex *img_transpose;
     int img_width;
     int img_height;
+
+    if (img_height < NUM_THREADS) {
+        NUM_THREADS = img_height;
+    }
     std::vector<std::thread> threads(NUM_THREADS);
 
     InputImage image_handler;

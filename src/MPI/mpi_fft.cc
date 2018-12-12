@@ -126,7 +126,8 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     }
     MPI_Bcast(&img_width, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&img_height, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    
+
+    if (MPI_rank < img_height) {
 
     // Last rank can have a chunk size different than the rest for rows % ranks != 0
     if (MPI_rank != MPI_num_ranks - 1) {
@@ -140,13 +141,11 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     //////////////////      ROWS        ////////////////// 
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
     for (int row = 0; row < chunk_size; ++row) {
-// TODO ////////////////////////
 	    if (is_reverse) {
                 inverse_inplace_fft(elements + (row * img_width), img_width);
 	    } else {
                 inplace_fft(elements + (row * img_width), img_width);
             }
-// TODO ////////////////////////    
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
 
@@ -163,7 +162,6 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     //////////////////      COLUMNS         //////////////////
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
     for (int row = 0; row < chunk_size; ++row) {
-// TODO ////////////////////////
 	    if (is_reverse) {
                 inverse_inplace_fft(elements + (row * img_height), img_height);
 		// normalize 
@@ -173,7 +171,6 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 	    } else {
                 inplace_fft(elements + (row * img_height), img_height);
             }
-// TODO ////////////////////////
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
 
@@ -197,6 +194,7 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
         }
 
         delete [] img_transpose;
+    }
     }
 
     MPI_Finalize();

@@ -128,6 +128,7 @@ void inverse_recursive_fft(Complex *input, int size) {
         input[i] = even[i] + temp;
         input[i + (size >> 1)] = even[i] - temp;
     }
+    // need to normalize outside of function
 }
 
 ///////////////////////////////////////////////////////////////
@@ -154,7 +155,9 @@ void inverse_inplace_fft(Complex *input, int size) {
         input[i] = even + twiddle_factor;
         input[i + (size / 2)] = even - twiddle_factor;
     }
+    // need to normalize outside of function
 }
+
 ///////////////////////////////////////////////////////////////
 
 void non_recursive_inplave_fft(Complex *input, int size) {
