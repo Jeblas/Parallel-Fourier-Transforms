@@ -7,7 +7,8 @@ $ make
 $ ./p31 <forward|reverse> <input_file.txt> <output_file.txt>
 $ mpirun -np 8 ./p32 <forward|reverse> <input_file.txt> <output_file.txt> 
 $ ./p33 <forward|reverse> <input_file.txt> <output_file.txt>
-$ nvprof ./p33 <forward|reverse> <input_file.txt> <output_file.txt>   **For analysis**
+# **For analysis**
+$ nvprof ./p33 <forward|reverse> <input_file.txt> <output_file.txt>   
 
 ```
 
