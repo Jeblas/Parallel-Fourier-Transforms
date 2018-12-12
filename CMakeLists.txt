@@ -9,9 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS})
 set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS})
 
-include_directories(
-    src
-)
 
 set(SOURCE_FILES
         src/input_image.cc
@@ -37,8 +34,6 @@ if(${CUDA_FOUND})
     set(CMAKE_CXX_STANDARD 11)
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11; )
     set(SOURCE_FILES_CUDA ${SOURCE_FILES})
-    set(SOURCE_FILES ${SOURCE_FILES}
-            src/Cuda/cuda_naive.cu)
     set(SOURCE_FILES_CUDA ${SOURCE_FILES_CUDA}
             src/Cuda/cuda_naive.cu)
     add_definitions(-DWITH_CUDA)
@@ -49,7 +44,7 @@ if(${CUDA_FOUND})
     add_executable(p33 ${SOURCE_FILES_CUDA} src/main.cc)
     target_compile_definitions(p33 PRIVATE -DCUDA=1)
     target_link_libraries(p33 ${CUDA_LIBRARIES} ${CUDA_cusparse_LIBRARY} ${CUDA_cublas_LIBRARY})
-    target_link_libraries(p3 ${CUDA_LIBRARIES} ${CUDA_cusparse_LIBRARY} ${CUDA_cublas_LIBRARY})
+
 endif(${CUDA_FOUND})
 
 if(${MPI_FOUND})

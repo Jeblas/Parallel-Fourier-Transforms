@@ -22,7 +22,7 @@ struct csr_complex_Mat {
 	int * csrColIndA;
 };
 
-void cuda_naive(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir);
+void cuda_2d_dft(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir);
 
 void cuda_ufft(Complex * input_image, Complex * output_transform, InputImage inputImage);
 

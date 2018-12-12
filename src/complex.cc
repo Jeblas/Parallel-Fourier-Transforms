@@ -42,12 +42,12 @@ std::ostream& operator<< (std::ostream& os, const Complex& rhs) {
     if(fabsf(rhs.imag) < 1e-10) c.imag = 0.0f;
     if(fabsf(rhs.real) < 1e-10) c.real = 0.0f;
 
-    if(rhs.imag < 1e-10) {
-        os << c.real;
+//    if(rhs.imag < 1e-10) {
+//        os << c.real;
+//
+//    }
 
-    }
-    else {
         os << "(" << c.real << "," << c.imag << ")";
-    }
+
     return os;
 }

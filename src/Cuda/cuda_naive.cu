@@ -76,12 +76,11 @@ __global__ void dft_row(Complex * input, Complex * output, int w, int h) {
 
 }
 
-
-void cuda_naive(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir) {
+void cuda_2d_dft(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir) {
 	Complex * d_input_image = NULL;
 	Complex * d_output_transform = NULL;
 	Complex * d_input_image_transpose = NULL;
-
+	std::cout << dir << std::endl;
 	int w = input_image_meta.get_width();
 	int h = input_image_meta.get_height();
 
@@ -101,13 +100,6 @@ void cuda_naive(Complex * input_image, Complex * output_transform, InputImage in
 		idft_row << < dim3(grid_width, grid_height), dim3(THREADS_PER_BLOCK_SIDE, THREADS_PER_BLOCK_SIDE) >> >
 													 (d_input_image, d_output_transform, w, h);
 	}
-
-	cudaMemcpy(output_transform, d_output_transform, sizeof(Complex)*w*h,cudaMemcpyDeviceToHost);
-	for(int i =0; i < w; i++) {
-		std::cout << output_transform[i].real << ", ";
-	}
-	std::cout << std::endl;
-
 
 	transpose<<<dim3(grid_width,grid_height), dim3(THREADS_PER_BLOCK_SIDE, THREADS_PER_BLOCK_SIDE)>>>(d_output_transform, d_input_image_transpose, w, h);
 
