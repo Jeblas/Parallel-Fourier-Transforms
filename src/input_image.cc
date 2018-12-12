@@ -66,12 +66,13 @@ void InputImage::read_image_data(const char* filename) {
            }
     }
     else {
-    	std::istringstream line_in_ss(line_in);
-    	for(int c = 0; c < w; ++c) {
-    		float real;
-    		line_in_ss >> real;
-    		data[c] = Complex(real);
-    	}
+
+	std::istringstream line_in_ss(line_in);
+	for (int c = 0; c < w; ++c) {
+	    float real;
+	    line_in_ss >> real;
+	    data[c] = Complex(real);
+	}
         for (int r = 1; r < h; ++r) {
             for (int c = 0; c < w; ++c) {
                 float real;
