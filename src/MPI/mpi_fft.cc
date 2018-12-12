@@ -16,48 +16,6 @@ void decompose_complex_array(Complex *input, float *out_real, float *out_imag, i
     }
 }
 
-/*
-void separate(Complex *array, size_t size) {
-    // All evens to lower half; odds to upper half
-    Complex *temp = new Complex[size];
-
-    for (size_t i = 0; i < (size >> 1); ++i) {
-        temp[i] = array[(i << 1) + 1];
-    }
-    for (size_t i = 0; i < (size >> 1); ++i) {
-        array[i] = array[i << 1];
-    }
-    for (size_t i = 0; i < (size >> 1); ++i) {
-        array[i + (size >> 1)] = temp[i];
-    }
-    delete[] temp;
-}
-
-void fft(Complex *input, int size) {
-    if (size <= 1) {
-        return;
-    }
-
-    //divide
-    separate(input, size);
-
-    //recursive call
-    fft(input, size >> 1);
-    fft(input + (size >> 1), size >> 1);
-
-    //combine
-    for (size_t i = 0; i < size / 2; ++i) {
-        float theta = -2 * PI * i / size;
-	    Complex even = input[i];
-	    Complex odd = input[i + (size >> 1)];
-        
-	    Complex twiddle_factor = Complex(cos(theta), sin(theta)) * odd;
-        input[i] = even + twiddle_factor;
-        input[i + (size >> 1)] = even - twiddle_factor;
-    }
-}
-*/
-
 void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
         for (int i = 0; i < chunk_size * img_width; ++i) {
@@ -145,7 +103,7 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
 }
 
 // TODO change to main_mpi
-int main(int argc, char **argv) {
+int mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     MPI_Init(&argc, &argv);
     int MPI_num_ranks;
     MPI_Comm_size(MPI_COMM_WORLD, &MPI_num_ranks);
@@ -184,6 +142,12 @@ int main(int argc, char **argv) {
     //////////////////      ROWS        ////////////////// 
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
     for (int row = 0; row < chunk_size; ++row) {
+	    if (is_reverse) {
+	    	// conjugate elements in row
+		for (int col = 0; col < img_width; ++col) {
+		    elements[col + row * img_width] = elements[col + row * img_width].conj();
+		}
+	    }
 	    recursive_fft(elements + (row * img_width), img_width);
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
@@ -202,13 +166,32 @@ int main(int argc, char **argv) {
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
     for (int row = 0; row < chunk_size; ++row) {
 	    recursive_fft(elements + (row * img_height), img_height);
+	    if (is_reverse) {
+	    	// conjugate elements in row
+		for (int col = 0; col < img_height; ++col) {
+		    elements[col + row * img_height] = elements[col + row * img_height].conj();
+                    elements[col + row * img_height].real /= img_height * img_width;
+                    elements[col + row * img_height].imag /= img_height * img_width;
+		}
+	    }
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
    
     delete [] elements;
+    
+    //////////////////      Transpose       ////////////////// 
+    if (MPI_rank == 0) {
+        img_transpose = new Complex[img_width * img_height];
+        for (int row = 0; row < img_height; ++row) {
+            for (int col = 0; col < img_width; ++col) {
+                img[col + (row * img_width)] = img_transpose[row + (col * img_height)];
+            }
+        }
+    }
+    
     // Output
     if (MPI_rank == 0) {
-        image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
+        image_handler.save_image_data(argv[3], img, img_width, img_height);
 
         delete [] img_transpose;
     }

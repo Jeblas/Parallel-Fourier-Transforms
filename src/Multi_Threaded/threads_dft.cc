@@ -3,19 +3,6 @@
 const float PI = 3.14159265358979f;
 const int NUM_THREADS = 8;
 
-/*
-void dft(Complex *input, Complex *output, int size) {
-    for(int n = 0; n < size; ++n) {
-        output[n] = Complex(0,0);
-        for(int k = 0; k < size; ++k) {
-            float theta = 2 * PI * n * k / size;
-            Complex W = Complex(cos(theta), -sin(theta));
-            output[n] = output[n] + W * input[k];
-        }
-    }
-}
-*/
-
 void thread_dft_loop(Complex *input, Complex *output, int chunk_size, int thread_id, int num_cols) {
     int offset = thread_id * chunk_size * num_cols;
     for (int row = 0; row < chunk_size; row++) {
@@ -36,7 +23,7 @@ void launch_threads_dft(std::vector<std::thread> & threads, Complex *input, Comp
     }
 }
 
-int main(int argc, char **argv) {
+int mt_dft_2d(int argc, char **argv, bool is_reverse) {
     Complex *img;
     Complex *img_transpose;
     int img_width;
@@ -51,6 +38,15 @@ int main(int argc, char **argv) {
     img_transpose = new Complex[img_width * img_height];
     Complex *out = new Complex[img_width * img_height];
 
+    if (is_reverse) {
+	// not concerned with idft performance
+        for (int row = 0; row < img_height; ++row) {
+	    for (int col = 0; col < img_width; ++ col) {
+	        img[col + row * img_width] = img[col + row * img_width].conj();
+	    }
+	}
+    }
+
     launch_threads_dft(threads, img, out, img_height, img_width);
 
     // Transpose
@@ -62,7 +58,25 @@ int main(int argc, char **argv) {
 
     launch_threads_dft(threads, img_transpose, out, img_width, img_height);
     
-    image_handler.save_image_data(argv[3], out, img_width, img_height);
+    // Transpose
+    for (int row = 0; row < img_height; ++row) {
+        for (int col = 0; col < img_width; ++col) {
+	        img_transpose[row + (col * img_height)] = out[col + (row * img_width)];
+	    }
+    }
+    
+    if (is_reverse) {
+	// not concerned with idft performance
+        for (int row = 0; row < img_height; ++row) {
+	    for (int col = 0; col < img_width; ++ col) {
+	        img_transpose[col + row * img_width] = img_transpose[col + row * img_width].conj();
+		img_transpose[col + row * img_width].real /= img_width * img_height;
+		img_transpose[col + row * img_width].imag /= img_width * img_height;
+	    }
+	}
+    }
+    
+    image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
     delete [] img_transpose;
     delete [] out;
     
