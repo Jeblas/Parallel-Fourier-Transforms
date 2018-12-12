@@ -9,3 +9,4 @@ void separate(Complex * array, size_t size);
 void inplace_fft(Complex *input, int size);
 void recursive_fft(Complex *input, int size);
 void inverse_recursive_fft(Complex *input, int size);
+void inverse_inplace_fft(Complex *input, int size);

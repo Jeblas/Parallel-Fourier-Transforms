@@ -142,7 +142,7 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     for (int row = 0; row < chunk_size; ++row) {
 // TODO ////////////////////////
 	    if (is_reverse) {
-            inverse_inplace_fft(elements + (row * img_width), width);
+            inverse_inplace_fft(elements + (row * img_width), img_width);
 	    } else {
             inplace_fft(elements + (row * img_width), img_width);
         }
