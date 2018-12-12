@@ -1,10 +1,12 @@
 #include "../complex.h"
 #include "../input_image.h"
+#include "../fourier_transforms.h"
 
 #include <cmath>
 
 const float PI = 3.14159265358979f;
 
+/*
 void separate(Complex * array, size_t size) {
     // All evens to lower half; odds to upper half
     Complex *temp = new Complex[size / 2];
@@ -45,6 +47,7 @@ void fft(Complex *input, int size) {
         input[i + (size / 2)] = even - twiddle_factor;
     }
 }
+*/
 
 int main(int argc, char **argv) {
     Complex *img;
@@ -61,7 +64,7 @@ int main(int argc, char **argv) {
     img_transpose = new Complex[img_width * img_height];
 
     for (int row = 0; row < img_height; ++row) {
-        fft(img + row * img_width, img_width);
+        inplace_fft(img + row * img_width, img_width);
     }
 
     // Transpose
@@ -72,7 +75,7 @@ int main(int argc, char **argv) {
     }
 
     for (int row = 0; row < img_width; ++row) {
-        fft(img_transpose + row * img_height, img_height);
+        inplace_fft(img_transpose + row * img_height, img_height);
     }
 
     image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);

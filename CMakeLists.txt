@@ -14,25 +14,13 @@ if(${CUDA_FOUND})
     set(CMAKE_CXX_STANDARD 11)
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11; )
     set(SOURCE_FILES
-            src/Cuda/cuda_naive.cu
-#            src/MPI/mpi_fft.cc
-#            src/Single_Threaded/dft.cc
-#            src/Single_Threaded/recursive-fft.cc
-            src/complex.cc
-            src/input_image.cc
-            src/Single_Threaded/single_threaded_naive.cpp)
+            src/complex.cc src/input_image.cc src/single-thread-cooley-turkey.cc src/single_thread_naive.cpp src/cuda_naive.cu src/cuda_naive.h)
     add_definitions(-DWITH_CUDA)
     include_directories(${CUDA_INCLUDE_DIRS})
     link_directories(${CUDA_LIBRARY_DIRS})
 else(${CUDA_FOUND})
     set(SOURCE_FILES
-            src/Cuda/cuda_naive.cu
-#            src/MPI/mpi_fft.cc
-#            src/Single_Threaded/dft.cc
-#            src/Single_Threaded/recursive-fft.cc
-            src/complex.cc
-            src/input_image.cc src/main.cpp
-            src/Single_Threaded/single_threaded_naive.cpp)
+            src/complex.cc src/input_image.cc src/single-thread-cooley-turkey.cc src/single_thread_naive.cpp)
 endif(${CUDA_FOUND})
 
 

@@ -79,7 +79,7 @@ void fft(Complex *in, int size, int step, int start) {
         in [index_start + (step * size / 2 )] = in[even_ith_index] - temp;
 */
     }
-	delete[] temp;
+	//delete[] temp;
 }
 
 int main(int argc, char **argv) {

@@ -16,6 +16,7 @@ void decompose_complex_array(Complex *input, float *out_real, float *out_imag, i
     }
 }
 
+/*
 void separate(Complex *array, size_t size) {
     // All evens to lower half; odds to upper half
     Complex *temp = new Complex[size];
@@ -55,11 +56,10 @@ void fft(Complex *input, int size) {
         input[i + (size >> 1)] = even - twiddle_factor;
     }
 }
+*/
 
-// TODO requires memcpy for rank 0
 void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
-    // TODO !!! memcopy first elements from img to elements ////////////////////
         for (int i = 0; i < chunk_size * img_width; ++i) {
 	    elements[i] = img[i];
 	}
@@ -102,7 +102,6 @@ void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int im
 
 void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
-        //std::memcopy(); into img
 	for (int i = 0; i < chunk_size * img_width; ++i) {
 	    img[i] = elements[i];
 	}
@@ -144,9 +143,9 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
         delete [] out_imag;
     }
 }
-/*
+
+// TODO change to main_mpi
 int main(int argc, char **argv) {
-    // Need img_width, img_height
     MPI_Init(&argc, &argv);
     int MPI_num_ranks;
     MPI_Comm_size(MPI_COMM_WORLD, &MPI_num_ranks);
@@ -163,14 +162,14 @@ int main(int argc, char **argv) {
 
     // Rank 0 responsible for reading file and sending values
     if (MPI_rank == 0) {
-       // image_handler = InputImage(argv[2]);
+	// Todo dont read the file for every process
+        // image_handler = InputImage(argv[2]);
         img = image_handler.get_image_data();
         img_width = image_handler.get_width();
         img_height = image_handler.get_height();
     }
     MPI_Bcast(&img_width, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&img_height, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    //MPI_Barrier(MPI_COMM_WORLD);
     
 
     // Last rank can have a chunk size different than the rest for rows % ranks != 0
@@ -185,7 +184,7 @@ int main(int argc, char **argv) {
     //////////////////      ROWS        ////////////////// 
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
     for (int row = 0; row < chunk_size; ++row) {
-	    fft(elements + (row * img_width), img_width);
+	    recursive_fft(elements + (row * img_width), img_width);
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
 
@@ -202,7 +201,7 @@ int main(int argc, char **argv) {
     //////////////////      COLUMNS         ////////////////// 
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
     for (int row = 0; row < chunk_size; ++row) {
-	    fft(elements + (row * img_height), img_height);
+	    recursive_fft(elements + (row * img_height), img_height);
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
    
@@ -216,4 +215,3 @@ int main(int argc, char **argv) {
 
     MPI_Finalize();
 }
-*/
