@@ -142,10 +142,10 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     for (int row = 0; row < chunk_size; ++row) {
 // TODO ////////////////////////
 	    if (is_reverse) {
-            inverse_inplace_fft(elements + (row * img_width), img_width);
+                inverse_inplace_fft(elements + (row * img_width), img_width);
 	    } else {
-            inplace_fft(elements + (row * img_width), img_width);
-        }
+                inplace_fft(elements + (row * img_width), img_width);
+            }
 // TODO ////////////////////////    
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
@@ -165,10 +165,14 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     for (int row = 0; row < chunk_size; ++row) {
 // TODO ////////////////////////
 	    if (is_reverse) {
-            inverse_inplace_fft(elements + (row * img_height), img_height);
+                inverse_inplace_fft(elements + (row * img_height), img_height);
+		// normalize 
+		for (int col = 0; col < img_height; ++col) {
+		    elements[col + row * img_height].real /= (img_width * img_height);
+		}
 	    } else {
-            inplace_fft(elements + (row * img_height), img_height);
-        }
+                inplace_fft(elements + (row * img_height), img_height);
+            }
 // TODO ////////////////////////
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
@@ -186,7 +190,11 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 
     // Output
     if (MPI_rank == 0) {
-        image_handler.save_image_data(argv[3], img, img_width, img_height);
+	if (is_reverse) {
+	    image_handler.save_image_data_real(argv[3], img, img_width, img_height);
+	} else {
+	    image_handler.save_image_data(argv[3], img, img_width, img_height);
+        }
 
         delete [] img_transpose;
     }

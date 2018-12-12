@@ -118,8 +118,8 @@ void inverse_recursive_fft(Complex *input, int size) {
     }
 
     //recursive call
-    recursive_fft(even, size >> 1);
-    recursive_fft(odd, size >> 1);
+    inverse_recursive_fft(even, size >> 1);
+    inverse_recursive_fft(odd, size >> 1);
 
     //combine
     for (size_t i = 0; i < size / 2; ++i) {
@@ -133,16 +133,27 @@ void inverse_recursive_fft(Complex *input, int size) {
 ///////////////////////////////////////////////////////////////
 
 void inverse_inplace_fft(Complex *input, int size) {
-    // conjugate of each element
-    for (int col = 0; col < size; ++col) {
-		        input[col] = input[col].conj();
-	}
-    inplace_fft(input,size);
-    for (int col = 0; col < size; ++col) {
-		        input[col] = input[col].conj();
-                input[col].real /= size;
-                input[col].imag /= size;
-	}
+    if (size <= 1) {
+        return;
+    }
+
+    //divide
+    separate(input, size);
+
+    //recursive call
+    inverse_inplace_fft(input, size / 2);
+    inverse_inplace_fft(input + (size / 2), size / 2);
+
+    //combine
+    for (int i = 0; i < (size / 2); ++i) {
+        float theta = 2.0f* PI * i / size;
+	Complex even = input[i];
+	Complex odd = input[i + (size / 2)];
+        
+	Complex twiddle_factor = Complex(cos(theta), sin(theta)) * odd;
+        input[i] = even + twiddle_factor;
+        input[i + (size / 2)] = even - twiddle_factor;
+    }
 }
 ///////////////////////////////////////////////////////////////
 

@@ -63,12 +63,14 @@ void mt_dft_2d(int argc, char **argv, bool is_reverse) {
 	        img_transpose[row + (col * img_height)] = out[col + (row * img_width)];
 	    }
     }
-	if(is_reverse)
-    	image_handler.save_image_data_real(argv[3], img_transpose, img_width, img_height);
-    else
-		image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
 
-	delete [] img_transpose;
+    if(is_reverse) {
+    	image_handler.save_image_data_real(argv[3], img_transpose, img_width, img_height);    
+    } else {
+        image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
+    }
+
+    delete [] img_transpose;
     delete [] out;
     
 }
