@@ -181,7 +181,6 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     
     //////////////////      Transpose       ////////////////// 
     if (MPI_rank == 0) {
-        img_transpose = new Complex[img_width * img_height];
         for (int row = 0; row < img_height; ++row) {
             for (int col = 0; col < img_width; ++col) {
                 img[col + (row * img_width)] = img_transpose[row + (col * img_height)];

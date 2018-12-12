@@ -2,7 +2,7 @@
 #include "Multi_Threaded/threads_dft.h"
 #endif
 
-#ifdef MPI
+#ifdef WMPI
 #include "MPI/mpi_fft.h"
 #endif
 
@@ -48,8 +48,8 @@ image_handler.save_image_data(argv[argc - 1], out_image_cuda, w, h);
 #ifdef MT
         mt_dft_2d(argc, argv, false);
 #endif
-#ifdef MPI
-        mpi_fft_2d(argc, argv, false);
+#ifdef WMPI
+	mpi_fft_2d(argc, argv, false);
 #endif
 #ifdef CUDA
 	
@@ -57,9 +57,9 @@ image_handler.save_image_data(argv[argc - 1], out_image_cuda, w, h);
 	// main_cuda_forward(argc, argv);
     } else {
 #ifdef MT
-        mt_dft_2d(argc, argv,false);
+        mt_dft_2d(argc, argv, true);
 #endif
-#ifdef MPI
+#ifdef WMPI
         mpi_fft_2d(argc, argv, true);
 #endif
         // main_cuda_reverse(argc, argv);

@@ -59,8 +59,8 @@ endif(${CUDA_FOUND})
 if(${MPI_FOUND})
     set(SOURCE_FILES_MPI ${SOURCE_FILES})
     include_directories(${MPI_INCLUDE_PATH})
-    set(SOURCE_FILES ${SOURCE_FILES}
-            src/MPI/mpi_fft.cc)
+    #set(SOURCE_FILES ${SOURCE_FILES}
+    #        src/MPI/mpi_fft.cc)
     set(SOURCE_FILES_MPI ${SOURCE_FILES_MPI}
             src/MPI/mpi_fft.cc)
 
@@ -68,5 +68,6 @@ if(${MPI_FOUND})
     add_executable(p32 ${SOURCE_FILES_MPI} src/main.cc)
     target_compile_definitions(p32 PRIVATE -DWMPI=1)
     target_link_libraries(p32 ${MPI_LIBRARIES})
-    target_link_libraries(p3 ${MPI_LIBRARIES})
+    #target_link_libraries(p3 ${MPI_LIBRARIES})
+
 endif(${MPI_FOUND})
