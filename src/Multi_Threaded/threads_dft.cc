@@ -42,6 +42,11 @@ void mt_dft_2d(int argc, char **argv, bool is_reverse) {
     img_width = image_handler.get_width();
     img_height = image_handler.get_height();
 
+    for(int i = 0; i < img_height*img_width; i++) {
+    	std::cout << img[i] << ", ";
+    	if(!((i+1) % img_width))
+    		std::cout <<std::endl;
+    }
     img_transpose = new Complex[img_width * img_height];
     Complex *out = new Complex[img_width * img_height];
 
