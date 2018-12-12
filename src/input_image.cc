@@ -66,6 +66,7 @@ void InputImage::read_image_data(const char* filename) {
            }
     }
     else {
+
 	std::istringstream line_in_ss(line_in);
 	for (int c = 0; c < w; ++c) {
 	    float real;
