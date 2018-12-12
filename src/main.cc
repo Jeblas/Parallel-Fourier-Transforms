@@ -43,7 +43,6 @@ cuda_2d_dft(input_image, out_image_cuda, image_handler, direction);
 image_handler.save_image_data(argv[argc - 1], out_image_cuda, w, h);
 #endif
 
-#endif
     if (argv[1] == "forward") {
 #ifdef MT
         mt_dft_2d(argc, argv, false);

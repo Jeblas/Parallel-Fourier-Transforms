@@ -23,7 +23,7 @@ void launch_threads_dft(std::vector<std::thread> & threads, Complex *input, Comp
     }
 }
 
-int mt_dft_2d(int argc, char **argv, bool is_reverse) {
+void mt_dft_2d(int argc, char **argv, bool is_reverse) {
     Complex *img;
     Complex *img_transpose;
     int img_width;
@@ -80,5 +80,4 @@ int mt_dft_2d(int argc, char **argv, bool is_reverse) {
     delete [] img_transpose;
     delete [] out;
     
-    return 0;
 }

@@ -3,24 +3,32 @@ project(P3)
 
 find_package(CUDA)
 find_package(MPI REQUIRED)
-find_package(Threads REQUIRED)
+find_package(Threads)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS})
+set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS})
 
 set(SOURCE_FILES
         src/input_image.cc
         src/fourier_transforms.cc
         src/complex.cc
-        src/Single_Threaded/single_threaded_naive.cpp
-        src/Single_Threaded/dft.cc
-        src/Single_Threaded/recursive_fft.cc)
+	#src/Single_Threaded/single_threaded_naive.cpp
+	#src/Single_Threaded/dft.cc
+	#src/Single_Threaded/recursive_fft.cc
+	)
 set(SOURCE_FILES_CUDA ${SOURCE_FILES})
+
 set(SOURCE_FILES_MPI ${SOURCE_FILES})
 
+# Why 2 steps?
 set(SOURCE_FILES_MT ${SOURCE_FILES} src/Multi_Threaded/threads_dft.cc)
 set(SOURCE_FILES ${SOURCE_FILES_MT})
+
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
     message(FATAL_ERROR "Require at least gcc-5.3")
 endif()
+
 
 if(${MPI_FOUND})
     include_directories(${MPI_INCLUDE_PATH})
@@ -43,12 +51,19 @@ if(${CUDA_FOUND})
     link_directories(${CUDA_LIBRARY_DIRS})
 endif(${CUDA_FOUND})
 
+
+
+
+
 add_executable(p3 ${SOURCE_FILES} src/main.cc)
 target_compile_definitions(p3 PRIVATE -DTEST=1)
 
+
+
+
 add_executable(p31 ${SOURCE_FILES_MT} src/main.cc)
 target_compile_definitions(p31 PRIVATE -DMT=1)
-target_link_libraries(p31 Threads::Threads)
+target_link_libraries(p31 ${CMAKE_THREADS_LIBS_INIT})
 
 if(${CUDA_FOUND})
 

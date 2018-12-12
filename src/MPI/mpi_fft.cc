@@ -103,7 +103,7 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
 }
 
 // TODO change to main_mpi
-int mpi_fft_2d(int argc, char **argv, bool is_reverse) {
+void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     MPI_Init(&argc, &argv);
     int MPI_num_ranks;
     MPI_Comm_size(MPI_COMM_WORLD, &MPI_num_ranks);
