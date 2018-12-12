@@ -12,12 +12,12 @@ enum FourierDirection {FORWARD, REVERSE};
 
 class InputImage {
 public:
-    InputImage() {};
+    InputImage();
     InputImage(const char* filename);
 
     int get_width() const;
     int get_height() const;
-
+    void read_image_data(const char* filename);
     //returns a pointer to the image data.  Note the return is a 1D
     //array which represents a 2D image.  The data for row 1 is
     //immediately following the data for row 0 in the 1D array

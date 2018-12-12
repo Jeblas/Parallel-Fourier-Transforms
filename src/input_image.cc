@@ -9,7 +9,27 @@
 #include <sstream>
 #include <iostream>
 
+InputImage::InputImage(): w(0), h(0), data(nullptr) {}
+
 InputImage::InputImage(const char* filename) {
+    std::ifstream ifs(filename);
+    if(!ifs) {
+        std::cout << "Can't open image file " << filename << std::endl;
+        exit(1);
+    }
+
+    ifs >> w >> h;
+    data = new Complex[w * h];
+    for(int r = 0; r < h; ++r) {
+        for(int c = 0; c < w; ++c) {
+            float real;
+            ifs >> real;
+            data[r * w + c] = Complex(real);
+        }
+    }
+}
+
+void InputImage::read_image_data(const char* filename) {
     std::ifstream ifs(filename);
     if(!ifs) {
         std::cout << "Can't open image file " << filename << std::endl;

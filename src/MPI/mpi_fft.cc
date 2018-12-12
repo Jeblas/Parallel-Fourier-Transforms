@@ -158,12 +158,12 @@ int main(int argc, char **argv) {
     int img_width;
     int img_height;
     uint32_t chunk_size;
-    InputImage image_handler(argv[2]);
+    InputImage image_handler = InputImage();
 
     // Rank 0 responsible for reading file and sending values
     if (MPI_rank == 0) {
 	// Todo dont read the file for every process
-        // image_handler = InputImage(argv[2]);
+        image_handler.read_image_data(argv[2]);
         img = image_handler.get_image_data();
         img_width = image_handler.get_width();
         img_height = image_handler.get_height();

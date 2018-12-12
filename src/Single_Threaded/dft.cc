@@ -3,6 +3,7 @@
 #include "../fourier_transforms.h"
 
 #include <cmath>
+#include <iostream>
 
 const float PI = 3.14159265358979f;
 
@@ -54,6 +55,6 @@ int main(int argc, char **argv) {
     image_handler.save_image_data(argv[3], out, img_width, img_height);
     delete [] img_transpose;
     delete [] out;
-    
+
     return 0;
 }
