@@ -16,6 +16,8 @@ void dft(Complex *input, Complex *output, int size) {
     }
 }
 
+///////////////////////////////////////////////////////////////
+
 void inverse_dft(Complex *input, Complex *output, int size) {
     for(int n = 0; n < size; ++n) {
         output[n] = Complex(0,0);
@@ -28,6 +30,7 @@ void inverse_dft(Complex *input, Complex *output, int size) {
         output[n].imag = output[n].imag/size;
     }
 }
+
 ///////////////////////////////////////////////////////////////
 
 void separate(Complex * array, size_t size) {
@@ -98,6 +101,8 @@ void recursive_fft(Complex *input, int size) {
         input[i + (size >> 1)] = even[i] - temp;
     }
 }
+
+///////////////////////////////////////////////////////////////
 
 void inverse_recursive_fft(Complex *input, int size) {
 

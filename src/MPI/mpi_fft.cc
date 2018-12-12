@@ -143,12 +143,15 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 // TODO ////////////////////////
 	    if (is_reverse) {
 	    	// conjugate elements in row
-		for (int col = 0; col < img_width; ++col) {
-		    elements[col + row * img_width] = elements[col + row * img_width].conj();
-		}
-	    }
+		    for (int col = 0; col < img_width; ++col) {
+		        elements[col + row * img_width] = elements[col + row * img_width].conj();
+		    }
+            inplace_fft(elements + (row * img_height), img_height);
+	    } else {
+            inplace_fft(elements + (row * img_width), img_width);
+        }
 // TODO ////////////////////////
-	    recursive_fft(elements + (row * img_width), img_width);
+	    
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
 
@@ -165,16 +168,18 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     //////////////////      COLUMNS         //////////////////
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
     for (int row = 0; row < chunk_size; ++row) {
-	    recursive_fft(elements + (row * img_height), img_height);
 // TODO ////////////////////////
 	    if (is_reverse) {
 	    	// conjugate elements in row
-		for (int col = 0; col < img_height; ++col) {
-		    elements[col + row * img_height] = elements[col + row * img_height].conj();
-                    elements[col + row * img_height].real /= img_height * img_width;
-                    elements[col + row * img_height].imag /= img_height * img_width;
-		}
-	    }
+            inplace_fft(elements + (row * img_height), img_height);
+		    for (int col = 0; col < img_height; ++col) {
+		        elements[col + row * img_height] = elements[col + row * img_height].conj();
+                elements[col + row * img_height].real /= img_height * img_width;
+                elements[col + row * img_height].imag /= img_height * img_width;
+		    }
+	    } else {
+            inplace_fft(elements + (row * img_height), img_height);
+        }
 // TODO ////////////////////////
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
