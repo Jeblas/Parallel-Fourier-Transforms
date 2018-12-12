@@ -1,5 +1,5 @@
 #ifdef MT
-#include "./Multi_Threaded/threads_dtf.cc"
+#include "Multi_Threaded/threads_dft.h"
 #endif
 
 #ifdef MPI
