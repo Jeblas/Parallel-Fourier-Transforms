@@ -16,6 +16,18 @@ void dft(Complex *input, Complex *output, int size) {
     }
 }
 
+void inverse_dft(Complex *input, Complex *output, int size) {
+    for(int n = 0; n < size; ++n) {
+        output[n] = Complex(0,0);
+        for(int k = 0; k < size; ++k) {
+            float theta = 2.0f * PI * n * k / size;
+            Complex W = Complex(cos(theta), sin(theta));
+            output[n] = output[n] + (input[k] * W);
+        }
+        output[n].real = output[n].real/size;
+        output[n].imag = output[n].imag/size;
+    }
+}
 ///////////////////////////////////////////////////////////////
 
 void separate(Complex * array, size_t size) {
@@ -87,6 +99,32 @@ void recursive_fft(Complex *input, int size) {
     }
 }
 
+void inverse_recursive_fft(Complex *input, int size) {
+
+    if (size <= 1) {
+        return;
+    }
+
+    //divide
+    Complex even[size >> 1];
+    Complex odd[size >> 1];
+    for (size_t k = 0; k < (size >> 1); ++k) {
+        even[k] = input[k << 1];
+        odd[k] = input[(k << 1) + 1];
+    }
+
+    //recursive call
+    recursive_fft(even, size >> 1);
+    recursive_fft(odd, size >> 1);
+
+    //combine
+    for (size_t i = 0; i < size / 2; ++i) {
+        float theta = 2 * PI * i / size;
+        Complex temp = Complex(cos(theta), sin(theta)) * odd[i];
+        input[i] = even[i] + temp;
+        input[i + (size >> 1)] = even[i] - temp;
+    }
+}
 ///////////////////////////////////////////////////////////////
 
 

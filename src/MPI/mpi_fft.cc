@@ -152,7 +152,7 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
 
-    //////////////////      Transpose       ////////////////// 
+    //////////////////      Transpose       //////////////////
     if (MPI_rank == 0) {
         img_transpose = new Complex[img_width * img_height];
         for (int row = 0; row < img_height; ++row) {
@@ -162,7 +162,7 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
         }
     }
 
-    //////////////////      COLUMNS         ////////////////// 
+    //////////////////      COLUMNS         //////////////////
     distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
     for (int row = 0; row < chunk_size; ++row) {
 	    recursive_fft(elements + (row * img_height), img_height);
@@ -178,10 +178,10 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 // TODO ////////////////////////
     }
     collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
-   
+
     delete [] elements;
-    
-    //////////////////      Transpose       ////////////////// 
+
+    //////////////////      Transpose       //////////////////
     if (MPI_rank == 0) {
         for (int row = 0; row < img_height; ++row) {
             for (int col = 0; col < img_width; ++col) {
@@ -189,7 +189,7 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
             }
         }
     }
-    
+
     // Output
     if (MPI_rank == 0) {
         image_handler.save_image_data(argv[3], img, img_width, img_height);

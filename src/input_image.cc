@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iostream>
 
+
 InputImage::InputImage(): w(0), h(0), data(nullptr) {}
 
 InputImage::InputImage(const char* filename) {
@@ -38,11 +39,39 @@ void InputImage::read_image_data(const char* filename) {
 
     ifs >> w >> h;
     data = new Complex[w * h];
-    for(int r = 0; r < h; ++r) {
-        for(int c = 0; c < w; ++c) {
-            float real;
-            ifs >> real;
-            data[r * w + c] = Complex(real);
+    std::string line_in;
+
+    getline(ifs, line_in);
+    getline(ifs, line_in);
+    if(line_in[0] == '(')
+    {
+           int i = 0;
+           bool in_file = true;
+           while(i < h) {
+               int j = 0;
+               std::string sub_string;
+               std::istringstream line_in_ss(line_in);
+               getline(line_in_ss, sub_string, '(');
+               while (getline(line_in_ss, sub_string, '(')) {
+                    std::string in_num_string;
+                    std::istringstream sub_string_in_ss(sub_string);
+                    getline(sub_string_in_ss,in_num_string, ',');
+                    data[i*w + j].real = stof(in_num_string);
+                    getline(sub_string_in_ss, in_num_string, ',');
+                    data[i*w + j].imag = stof(in_num_string);
+                    j++;
+               }
+               getline(ifs, line_in);
+               i++;
+           }
+    }
+    else {
+        for (int r = 0; r < h; ++r) {
+            for (int c = 0; c < w; ++c) {
+                float real;
+                ifs >> real;
+                data[r * w + c] = Complex(real);
+            }
         }
     }
 }
@@ -59,7 +88,7 @@ Complex* InputImage::get_image_data() const {
     return data;
 }
 
-void InputImage::save_image_data(const char *filename, Complex *d, int w, int h) {
+void InputImage::save_image_data_real(const char *filename, Complex *d, int w, int h) {
     std::ofstream ofs(filename);
     if(!ofs) {
         std::cout << "Can't create output image " << filename << std::endl;
@@ -76,7 +105,7 @@ void InputImage::save_image_data(const char *filename, Complex *d, int w, int h)
     }
 }
 
-void InputImage::save_image_data_real(const char* filename, Complex* d, int w, int h) {
+void InputImage::save_image_data(const char* filename, Complex* d, int w, int h) {
     std::ofstream ofs(filename);
     if(!ofs) {
         std::cout << "Can't create output image " << filename << std::endl;

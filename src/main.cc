@@ -26,22 +26,27 @@ int main(int argc, char **argv) {
     //define tags for the variants
 #ifdef CUDA
     FourierDirection direction;
-    if (!strcmp(argv[argc - 3], "foward")) {
+    if (!strcmp(argv[argc - 3], "forward")) {
         direction  = FORWARD;
     } else {
         direction = REVERSE;
     }
 
-    InputImage image_handler(argv[argc - 2]);
+    InputImage image_handler;
+    image_handler.read_image_data(argv[argc - 2]);
 
     int w = image_handler.get_width();
     int h = image_handler.get_height();
 
-    Complex input_image[w * h];
-    memcpy(input_image, image_handler.get_image_data(), sizeof(Complex) * w * h);
+//    Complex input_image[w * h];
+//    memcpy(input_image, image_handler.get_image_data(), sizeof(Complex) * w * h);
     Complex out_image_cuda[w * h];
-    cuda_2d_dft(input_image, out_image_cuda, image_handler, direction);
-    image_handler.save_image_data(argv[argc - 1], out_image_cuda, w, h);
+    cuda_2d_dft(image_handler.get_image_data(), out_image_cuda, image_handler, direction);
+    if(direction == FORWARD)
+        image_handler.save_image_data(argv[argc - 1], out_image_cuda, w, h);
+    else
+        image_handler.save_image_data_real(argv[argc - 1], out_image_cuda, w, h);
+
 #endif
 
     if (!strcmp(argv[1], "forward")) {
