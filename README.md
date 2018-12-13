@@ -22,6 +22,6 @@ $ nvprof ./p33 <forward|reverse> <input_file.txt> <output_file.txt>
 - p32 utilizes MPI (requires OpenMPI or an equivalent)
 - p33 utilizes Cuda (requires Cuda and GCC 5.3)
 
-# TODO
-- parallelize Transforms
-- test non square inputs (optional)
+# Future Improvements
+- Parallelize transforms
+- Test non square inputs (optional)
