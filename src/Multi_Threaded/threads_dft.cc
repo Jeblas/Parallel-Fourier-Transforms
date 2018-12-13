@@ -35,26 +35,21 @@ void mt_dft_2d(int argc, char **argv, bool is_reverse) {
     int img_width;
     int img_height;
 
-    if (img_height < NUM_THREADS) {
-        NUM_THREADS = img_height;
-    }
-    std::vector<std::thread> threads(NUM_THREADS);
-
     InputImage image_handler;
     image_handler.read_image_data(argv[argc - 2]);
     img = image_handler.get_image_data();
     img_width = image_handler.get_width();
     img_height = image_handler.get_height();
 
-    for(int i = 0; i < img_height*img_width; i++) {
-    	std::cout << img[i] << ", ";
-    	if(!((i+1) % img_width))
-    		std::cout <<std::endl;
+    // For files with less rows than 8
+    if (img_height < NUM_THREADS) {
+        NUM_THREADS = img_height;
     }
+    std::vector<std::thread> threads(NUM_THREADS);
+
     img_transpose = new Complex[img_width * img_height];
     Complex *out = new Complex[img_width * img_height];
-
-
+    
     launch_threads_dft(threads, img, out, img_height, img_width, is_reverse);
 
     // Transpose
@@ -81,5 +76,4 @@ void mt_dft_2d(int argc, char **argv, bool is_reverse) {
 
     delete [] img_transpose;
     delete [] out;
-    
 }
