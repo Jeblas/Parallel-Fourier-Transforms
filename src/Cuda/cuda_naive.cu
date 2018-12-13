@@ -2,9 +2,7 @@
 // Created by jbm on 12/5/18.
 //
 
-
 #include "cuda_naive.h"
-
 
 __global__ void transpose(Complex * A, Complex * A_transpose, int w, int h) {
 	int i = threadIdx.y + blockDim.y * blockIdx.y;
@@ -26,7 +24,6 @@ __global__ void idft_row(Complex * input, Complex * output, int w, int h) {
 
 	int this_element = i * w + j;
 
-
 	if(i < h && j < w) {
 
 		output[this_element].real = 0;
@@ -43,8 +40,6 @@ __global__ void idft_row(Complex * input, Complex * output, int w, int h) {
 		}
 		output[this_element].real /= w;
 		output[this_element].imag /= w;
-
-
 	}
 }
 
@@ -53,7 +48,6 @@ __global__ void dft_row(Complex * input, Complex * output, int w, int h) {
 	int j = threadIdx.x + blockDim.x * blockIdx.x;
 
 	int this_element = i * w + j;
-
 
 	if(i < h && j < w) {
 
@@ -69,18 +63,13 @@ __global__ void dft_row(Complex * input, Complex * output, int w, int h) {
 			output[this_element].real += (W_real * input[neighboring_element].real - W_imag * input[neighboring_element].imag);
 			output[this_element].imag += (W_real * input[neighboring_element].imag + W_imag * input[neighboring_element].real);
 		}
-
-
 	}
-
-
 }
 
 void cuda_2d_dft(Complex * input_image, Complex * output_transform, InputImage input_image_meta, FourierDirection dir) {
 	Complex * d_input_image = NULL;
 	Complex * d_output_transform = NULL;
 	Complex * d_input_image_transpose = NULL;
-	std::cout << dir << std::endl;
 	int w = input_image_meta.get_width();
 	int h = input_image_meta.get_height();
 
@@ -155,11 +144,7 @@ csr_complex_Mat kronecker_I_B_k(int n, int k, csr_complex_Mat B_k) {
 	ret.csrValA = (cuComplex *) malloc(sizeof(cuComplex)*ret.nnz);
 	ret.csrColIndA = (int *) malloc(sizeof(int)*ret.nnz);
 	ret.csrRowPtrA = (int *) malloc(sizeof(int)*(n + 1));
-//	for(int i = 0; i < B_k.nnz; i++) {
-//		for(int j =0; j < dim_I; j++){
-//
-//		}
-//	}
+
 	for(int i = 0; i < n; i++) {
 		ret.csrRowPtrA[i] = 2*i;
 	}
@@ -167,9 +152,6 @@ csr_complex_Mat kronecker_I_B_k(int n, int k, csr_complex_Mat B_k) {
 
 	for(int j = 0; j < dim_I; j++) {
 		for(int i = 0; i < B_k.nnz; i++) {
-			int index = i + j*B_k.nnz;
-			int col = B_k.csrColIndA[i] + j*k;
-
 			ret.csrColIndA[i + j*B_k.nnz] = B_k.csrColIndA[i] + j*k;
 			ret.csrValA[i + j*B_k.nnz] = B_k.csrValA[i]; //might not be integer index
 		}
@@ -216,47 +198,21 @@ void ufft_row(cuComplex * d_row, int n ) {
 	cudaMalloc((void**)&d_Ikbk_csrRowPtrA,sizeof(cuComplex)*(n + 1));
 	cudaMalloc((void**)&d_Ikbk_csrColIndA,sizeof(int)*n*2);
 
-
 	cuComplex * d_dense_matrix = NULL;
 	cudaMalloc((void**)&d_dense_matrix, sizeof(cuComplex)*n*n);
-
-	cuComplex dense_matrix[n][n];
 
 	cudaMalloc((void**)&d_to_reverse,sizeof(cuComplex)*n);
 	cuComplex * out = (cuComplex *) malloc(sizeof(cuComplex)*n);
 	int num_blocks = ceil((float) n/32);
-//	cudaMemcpy(d_to_reverse, d_row, sizeof(cuComplex)*n, cudaMemcpyDeviceToDevice);
-//
 
 		for (int k = 2; k < n; k*=2) {
-//			construct B_k
+
 			csr_complex_Mat B_k = generate_B_k_csr(k);
 			csr_complex_Mat I_kron_B_k = kronecker_I_B_k(n, k, B_k);
 			cudaMemcpy(d_Ikbk_csrValA, I_kron_B_k.csrValA, sizeof(cuComplex)*I_kron_B_k.nnz,cudaMemcpyHostToDevice);
 			cudaMemcpy(d_Ikbk_csrRowPtrA, I_kron_B_k.csrRowPtrA, sizeof(int)*(n+1),cudaMemcpyHostToDevice);
 			cudaMemcpy(d_Ikbk_csrColIndA, I_kron_B_k.csrColIndA, sizeof(int)*I_kron_B_k.nnz,cudaMemcpyHostToDevice);
 
-//			cusparseCcsr2dense(cusparse_handle,
-//								n,
-//								n,
-//								descrA,
-//								d_Ikbk_csrValA,
-//								d_Ikbk_csrRowPtrA,
-//								d_Ikbk_csrColIndA,
-//								d_dense_matrix,
-//								n);
-//
-//			cudaMemcpy(dense_matrix, d_dense_matrix, sizeof(cuComplex)*n*n, cudaMemcpyDeviceToHost);
-//			for(int i = 0; i < n; i++) {
-//				for(int j =0; j < n; j++) {
-//					std::cout << std::fixed << std::setprecision(1);
-//					std::cout << "(" << dense_matrix[i][j].x << "," << dense_matrix[i][j].y << ") ";
-//				}
-//				std::cout << std::endl;
-//			}
-//			std::cout << std::endl;
-
-			//compute x = I_kron_B_k*x
 			cusparseCcsrmv(cusparse_handle,
 							CUSPARSE_OPERATION_NON_TRANSPOSE,
 							n,
@@ -274,36 +230,11 @@ void ufft_row(cuComplex * d_row, int n ) {
 
 		}
 			csr_complex_Mat B_k = generate_B_k_csr(n);
-//			csr_complex_Mat I_kron_B_k = kronecker_I_B_k(n,n, B_k);
+
 			cudaMemcpy(d_Ikbk_csrValA, B_k.csrValA, sizeof(cuComplex)*B_k.nnz,cudaMemcpyHostToDevice);
 			cudaMemcpy(d_Ikbk_csrRowPtrA, B_k.csrRowPtrA, sizeof(int)*(n+1),cudaMemcpyHostToDevice);
 			cudaMemcpy(d_Ikbk_csrColIndA, B_k.csrColIndA, sizeof(int)*B_k.nnz,cudaMemcpyHostToDevice);
 
-//			cusparseCcsr2dense(cusparse_handle,
-//								n,
-//								n,
-//								descrA,
-//								d_Ikbk_csrValA,
-//								d_Ikbk_csrRowPtrA,
-//								d_Ikbk_csrColIndA,
-//								d_dense_matrix,
-//								n);
-//
-//			cudaMemcpy(dense_matrix, d_dense_matrix, sizeof(cuComplex)*n*n, cudaMemcpyDeviceToHost);
-//			for(int i = 0; i < n; i++) {
-//				for(int j =0; j < n; j++) {
-//					std::cout << std::fixed << std::setprecision(1);
-//					std::cout << "(" << dense_matrix[i][j].x << "," << dense_matrix[i][j].y << ") ";
-//				}
-//				std::cout << std::endl;
-//			}
-//			std::cout << std::endl;
-//			for(int i = 0; i < B_k.nnz; i++) {
-//				std::cout << B_k.csrColIndA[i] << "," ;
-//
-//			}
-//			std::cout << std::endl;
-			//compute x = I_kron_B_k*x
 			cusparseCcsrmv(cusparse_handle,
 							CUSPARSE_OPERATION_TRANSPOSE,
 							n,
@@ -318,13 +249,8 @@ void ufft_row(cuComplex * d_row, int n ) {
 							&beta,
 							d_to_reverse);
 		cudaStreamSynchronize(stream);
-//		bit_reversal<<<num_blocks,32>>>(d_to_reverse, d_row, n);
 
 		cudaMemcpy(d_row, d_to_reverse, sizeof(cuComplex)*n, cudaMemcpyDeviceToDevice);
-//		for(int i = 0; i < n; i++) {
-//			std::cout << out[i].x << ", ";
-//		}
-//		std::cout << std::endl;
 
 		cudaFree(d_Ikbk_csrColIndA);
 		cudaFree(d_Ikbk_csrRowPtrA);
@@ -350,24 +276,17 @@ void cuda_ufft(Complex *input_image, Complex * output_transform, InputImage inpu
 	int grid_height = ceil((float)h/THREADS_PER_BLOCK_SIDE);
 	int grid_width = ceil((float)h/THREADS_PER_BLOCK_SIDE);
 
-
 	cuComplex h_input_image[w*h];
 	for(int i = 0; i < w*h; i++) {
 		h_input_image[i] = make_cuComplex(input_image[i].real, input_image[i].imag);
 	}
 	cudaMemcpy(d_input_image, h_input_image, sizeof(cuComplex)*w*h, cudaMemcpyHostToDevice);
 
-
 	for(int p = 0; p < h; p++) {
 		ufft_row(d_input_image + p*w, w);
-
 	}
 
 	cudaMemcpy(out, d_input_image, sizeof(cuComplex)*w*h, cudaMemcpyDeviceToHost);
-	for(int i = 0; i < w; i++) {
-		std::cout << out[i].x << ", ";
-	}
-	std::cout << std::endl;
 
 	transpose<<<dim3(grid_width,grid_height), dim3(THREADS_PER_BLOCK_SIDE, THREADS_PER_BLOCK_SIDE)>>>(d_input_image, d_input_image_transpose, w, h);
 
@@ -377,22 +296,11 @@ void cuda_ufft(Complex *input_image, Complex * output_transform, InputImage inpu
 
 	transpose<<<dim3(grid_width,grid_height), dim3(THREADS_PER_BLOCK_SIDE, THREADS_PER_BLOCK_SIDE)>>>(d_input_image_transpose, d_output_transform, w, h);
 
-
-
 	cudaMemcpy(out, d_output_transform, sizeof(cuComplex)*w*h, cudaMemcpyDeviceToHost);
-//	for(int i = 0; i < w*h; i++) {
-//		std::cout << out[i].x << ", ";
-//	}
-//	std::cout << std::endl;
-//	cudaMemcpy(h_input_image, d_output_transform, sizeof(cuComplex)*w*h,cudaMemcpyDeviceToHost);
+
 	for(int i =0; i < w*h; i++) {
 		output_transform[i].real = out[i].x;
 		output_transform[i].imag = out[i].y;
 	}
 	cudaDeviceReset();
-//	for(int i = 0; i < w*h; i++) {
-//		std::cout << output_transform[i].real << ", ";
-//	}
-//	std::cout << std::endl;
 }
-
