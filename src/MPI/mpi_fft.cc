@@ -132,6 +132,9 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
 
     // For files with less rows than 8
     if (MPI_rank < img_height) {
+	if (img_height < MPI_num_ranks) {
+	    MPI_num_ranks = img_height;
+	}
 
         // Last rank can have a chunk size different than the rest for rows % ranks != 0
         if (MPI_rank != MPI_num_ranks - 1) {
