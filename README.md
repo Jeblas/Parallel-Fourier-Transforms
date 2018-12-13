@@ -1,7 +1,7 @@
 # Build and Execute
 Automatic 
 ```bash
-$ ./launch.sh --t
+$ ./launch.sh -t
 ```
 
 Manual
