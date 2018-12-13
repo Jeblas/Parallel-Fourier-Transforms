@@ -38,9 +38,14 @@ int main(int argc, char **argv) {
         dft(img_transpose + row * img_height, out + row * img_height, img_height);
     }
     
-    // TODO transpose again
+    // Transpose
+    for (int row = 0; row < img_height; ++row) {
+        for (int col = 0; col < img_width; ++col) {
+	        img_transpose[row + (col * img_height)] = out[col + (row * img_width)];
+	    }
+    }
 
-    image_handler.save_image_data(argv[3], out, img_width, img_height);
+    image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
     delete [] img_transpose;
     delete [] out;
 

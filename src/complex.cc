@@ -42,10 +42,11 @@ std::ostream& operator<< (std::ostream& os, const Complex& rhs) {
     if(fabsf(rhs.imag) < 1e-10) c.imag = 0.0f;
     if(fabsf(rhs.real) < 1e-10) c.real = 0.0f;
 
-//    if(rhs.imag < 1e-10) {
-//        os << c.real;
-//
-//    }
+/* TODO Will this affect the output file
+    if(rhs.imag < 1e-10) {
+        os << c.real;
+    }
+*/
 
         os << "(" << c.real << "," << c.imag << ")";
 

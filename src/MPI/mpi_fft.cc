@@ -60,20 +60,23 @@ void distribute_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int im
 
 void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_width, int img_height, Complex *img, Complex *elements) {
     if (MPI_rank == 0) {
-	for (int i = 0; i < chunk_size * img_width; ++i) {
-	    img[i] = elements[i];
-	}
-	
+        // Copy Rank 0's elements into img
+        for (int i = 0; i < chunk_size * img_width; ++i) {
+            img[i] = elements[i];
+        }
+
     	size_t recv_size = chunk_size * img_width;
         float *real_elements = new float[recv_size];
         float *imag_elements = new float[recv_size];
         size_t index_offset;
+
         for (int rank = 1; rank < MPI_num_ranks - 1; ++rank) {
             index_offset = rank * recv_size;
             MPI_Recv(real_elements, recv_size, MPI_FLOAT, rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(imag_elements, recv_size, MPI_FLOAT, rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             compose_complex_array(img + index_offset , real_elements, imag_elements, recv_size);
         }
+        
         delete [] real_elements;
         delete [] imag_elements;
 
@@ -81,13 +84,13 @@ void collect_mpi_data(int MPI_rank, int MPI_num_ranks, int chunk_size, int img_w
         recv_size = (img_height - ((img_height / MPI_num_ranks) * (MPI_num_ranks - 1))) * img_width;
         real_elements = new float[recv_size];
         imag_elements = new float[recv_size];
+
         MPI_Recv(real_elements, recv_size, MPI_FLOAT, MPI_num_ranks - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(imag_elements, recv_size, MPI_FLOAT, MPI_num_ranks - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         compose_complex_array(img + index_offset , real_elements, imag_elements, recv_size);
+
         delete [] real_elements;
         delete [] imag_elements;
-
-
 	} else {
         size_t send_size = chunk_size * img_width;
         float *out_real = new float[send_size];
@@ -127,74 +130,74 @@ void mpi_fft_2d(int argc, char **argv, bool is_reverse) {
     MPI_Bcast(&img_width, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&img_height, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+    // For files with less rows than 8
     if (MPI_rank < img_height) {
 
-    // Last rank can have a chunk size different than the rest for rows % ranks != 0
-    if (MPI_rank != MPI_num_ranks - 1) {
-        chunk_size = img_height / MPI_num_ranks;
-    } else {
-        chunk_size = img_height - ((img_height / MPI_num_ranks) * (MPI_num_ranks - 1));
-    }
+        // Last rank can have a chunk size different than the rest for rows % ranks != 0
+        if (MPI_rank != MPI_num_ranks - 1) {
+            chunk_size = img_height / MPI_num_ranks;
+        } else {
+            chunk_size = img_height - ((img_height / MPI_num_ranks) * (MPI_num_ranks - 1));
+        }
 
-    elements = new Complex[img_width * chunk_size];
+        elements = new Complex[img_width * chunk_size];
 
-    //////////////////      ROWS        ////////////////// 
-    distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
-    for (int row = 0; row < chunk_size; ++row) {
-	    if (is_reverse) {
-                inverse_inplace_fft(elements + (row * img_width), img_width);
-	    } else {
-                inplace_fft(elements + (row * img_width), img_width);
-            }
-    }
-    collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
+        //////////////////      ROWS        ////////////////// 
+        distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
+        for (int row = 0; row < chunk_size; ++row) {
+            if (is_reverse) {
+                    inverse_inplace_fft(elements + (row * img_width), img_width);
+            } else {
+                    inplace_fft(elements + (row * img_width), img_width);
+                }
+        }
+        collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_width, img_height, img, elements);
 
-    //////////////////      Transpose       //////////////////
-    if (MPI_rank == 0) {
-        img_transpose = new Complex[img_width * img_height];
-        for (int row = 0; row < img_height; ++row) {
-            for (int col = 0; col < img_width; ++col) {
-                img_transpose[row + (col * img_height)] = img[col + (row * img_width)];
+        //////////////////      Transpose       //////////////////
+        if (MPI_rank == 0) {
+            img_transpose = new Complex[img_width * img_height];
+            for (int row = 0; row < img_height; ++row) {
+                for (int col = 0; col < img_width; ++col) {
+                    img_transpose[row + (col * img_height)] = img[col + (row * img_width)];
+                }
             }
         }
-    }
 
-    //////////////////      COLUMNS         //////////////////
-    distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
-    for (int row = 0; row < chunk_size; ++row) {
-	    if (is_reverse) {
+        //////////////////      COLUMNS         //////////////////
+        distribute_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
+        for (int row = 0; row < chunk_size; ++row) {
+            if (is_reverse) {
                 inverse_inplace_fft(elements + (row * img_height), img_height);
-		// normalize 
-		for (int col = 0; col < img_height; ++col) {
-		    elements[col + row * img_height].real /= (img_width * img_height);
-		}
-	    } else {
-                inplace_fft(elements + (row * img_height), img_height);
-            }
-    }
-    collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
+                // normalize 
+                for (int col = 0; col < img_height; ++col) {
+                    elements[col + row * img_height].real /= (img_width * img_height);
+                }
+            } else {
+                    inplace_fft(elements + (row * img_height), img_height);
+                }
+        }
+        collect_mpi_data(MPI_rank, MPI_num_ranks, chunk_size, img_height, img_width, img_transpose, elements);
 
-    delete [] elements;
+        delete [] elements;
 
-    //////////////////      Transpose       //////////////////
-    if (MPI_rank == 0) {
-        for (int row = 0; row < img_height; ++row) {
-            for (int col = 0; col < img_width; ++col) {
-                img[col + (row * img_width)] = img_transpose[row + (col * img_height)];
+        //////////////////      Transpose       //////////////////
+        if (MPI_rank == 0) {
+            for (int row = 0; row < img_height; ++row) {
+                for (int col = 0; col < img_width; ++col) {
+                    img[col + (row * img_width)] = img_transpose[row + (col * img_height)];
+                }
             }
         }
-    }
 
-    // Output
-    if (MPI_rank == 0) {
-	if (is_reverse) {
-	    image_handler.save_image_data_real(argv[3], img, img_width, img_height);
-	} else {
-	    image_handler.save_image_data(argv[3], img, img_width, img_height);
+        // Output
+        if (MPI_rank == 0) {
+            if (is_reverse) {
+                image_handler.save_image_data_real(argv[3], img, img_width, img_height);
+            } else {
+                image_handler.save_image_data(argv[3], img, img_width, img_height);
+            }
+            delete [] img_transpose;
         }
-
-        delete [] img_transpose;
-    }
     }
 
     MPI_Finalize();

@@ -2,7 +2,6 @@
 // Created by brian on 11/20/18.
 //
 
-
 #ifndef INPUT_IMAGE_H
 #define INPUT_IMAGE_H
 

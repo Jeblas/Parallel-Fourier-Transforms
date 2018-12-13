@@ -2,7 +2,6 @@
 // Created by brian on 11/20/18.
 //
 
-
 #ifndef COMPLEX_H
 #define COMPLEX_H
 

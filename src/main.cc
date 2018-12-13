@@ -10,7 +10,6 @@
 #include "Cuda/cuda_naive.h"
 #include "input_image.h"
 #include "complex.h"
-
 #endif
 
 #include <iostream>
@@ -54,10 +53,7 @@ int main(int argc, char **argv) {
         mt_dft_2d(argc, argv, false);
 #endif
 #ifdef WMPI
-	mpi_fft_2d(argc, argv, false);
-#endif
-#ifdef CUDA
-	
+	    mpi_fft_2d(argc, argv, false);
 #endif
     } else {
 #ifdef MT

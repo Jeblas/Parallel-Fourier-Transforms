@@ -9,7 +9,6 @@
 #include <sstream>
 #include <iostream>
 
-
 InputImage::InputImage(): w(0), h(0), data(nullptr) {}
 
 InputImage::InputImage(const char* filename) {
@@ -43,8 +42,7 @@ void InputImage::read_image_data(const char* filename) {
 
     getline(ifs, line_in);
     getline(ifs, line_in);
-    if(line_in[0] == '(')
-    {
+    if(line_in[0] == '(') {
            int i = 0;
            bool in_file = true;
            while(i < h) {
@@ -52,7 +50,8 @@ void InputImage::read_image_data(const char* filename) {
                std::string sub_string;
                std::istringstream line_in_ss(line_in);
                getline(line_in_ss, sub_string, '(');
-               while (getline(line_in_ss, sub_string, '(')) {
+
+                while (getline(line_in_ss, sub_string, '(')) {
                     std::string in_num_string;
                     std::istringstream sub_string_in_ss(sub_string);
                     getline(sub_string_in_ss,in_num_string, ',');
@@ -60,19 +59,19 @@ void InputImage::read_image_data(const char* filename) {
                     getline(sub_string_in_ss, in_num_string, ',');
                     data[i*w + j].imag = stof(in_num_string);
                     j++;
-               }
+                }
                getline(ifs, line_in);
                i++;
-           }
-    }
-    else {
+            }
+    } else {
+        std::istringstream line_in_ss(line_in);
 
-	std::istringstream line_in_ss(line_in);
-	for (int c = 0; c < w; ++c) {
-	    float real;
-	    line_in_ss >> real;
-	    data[c] = Complex(real);
-	}
+        for (int c = 0; c < w; ++c) {
+            float real;
+            line_in_ss >> real;
+            data[c] = Complex(real);
+        }
+
         for (int r = 1; r < h; ++r) {
             for (int c = 0; c < w; ++c) {
                 float real;

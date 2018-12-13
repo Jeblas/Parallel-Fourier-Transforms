@@ -18,9 +18,11 @@ void thread_dft_loop(Complex *input, Complex *output, int chunk_size, int thread
 
 void launch_threads_dft(std::vector<std::thread> & threads, Complex *input, Complex *output, int num_rows, int num_cols, bool is_reverse) {
     int chunk_size = num_rows / NUM_THREADS;
+    
     for (int thread_num = 0; thread_num < NUM_THREADS - 1; ++thread_num) {
         threads[thread_num] = std::thread(thread_dft_loop, input, output, chunk_size, thread_num, num_cols, is_reverse);
     }
+
     chunk_size = num_rows - ((num_rows / NUM_THREADS) * (NUM_THREADS - 1));
     threads.back() = std::thread(thread_dft_loop, input, output, chunk_size, NUM_THREADS - 1, num_cols, is_reverse);
 

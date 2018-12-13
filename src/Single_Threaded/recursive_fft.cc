@@ -35,9 +35,14 @@ int main(int argc, char **argv) {
         inplace_fft(img_transpose + row * img_height, img_height);
     }
 
-    // TODO Transpose again
+    // Transpose
+    for (int row = 0; row < img_height; ++row) {
+        for (int col = 0; col < img_width; ++col) {
+            img[row + (col * img_height)] = img_transpose[col + (row * img_width)];
+        }
+    }
 
-    image_handler.save_image_data(argv[3], img_transpose, img_width, img_height);
+    image_handler.save_image_data(argv[3], img, img_width, img_height);
 
     delete [] img_transpose;
 

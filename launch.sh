@@ -12,13 +12,10 @@ if [ ! -d "output_files" ]; then
     mkdir output_files
 fi
 
-
-# if measuring time
 key="$1"
 
 case $key in
     -t|--time)
-
         if [ -f "output_file/results.txt" ]; then
             rm output_file/results.txt
         fi
@@ -55,7 +52,6 @@ case $key in
                 echo "" >> ./output_files/results.txt
             fi
         fi
-
         if [ -f "build/p32" ]; then
             echo "=====================" >> ./output_files/results.txt
             echo "         MPI         " >> ./output_files/results.txt
@@ -86,7 +82,6 @@ case $key in
                 echo "" >> ./output_files/results.txt
             fi
         fi
-
         if [ -f "build/p33" ]; then
             echo "=====================" >> ./output_files/results.txt
             echo "        Cuda         " >> ./output_files/results.txt
@@ -195,6 +190,6 @@ case $key in
         ;;
     *)
         echo "Requires a valid flag."
-        echo "Type './run -h' for options."
+        echo "Type './launch -h' for options."
         ;;
 esac
