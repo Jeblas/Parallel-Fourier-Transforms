@@ -190,6 +190,6 @@ case $key in
         ;;
     *)
         echo "Requires a valid flag."
-        echo "Type './launch -h' for options."
+        echo "Type './launch.sh -h' for options."
         ;;
 esac
